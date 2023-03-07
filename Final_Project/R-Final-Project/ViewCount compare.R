@@ -3,7 +3,7 @@ library(dplyr)
 library(tuber)
 library(ggplot2)
 
-yt_oauth("40461753740-2db7dfc50roh6m94vqp0oo8s88nh15bb.apps.googleusercontent.com","DDYzno33FTdj6jcv_vKl8p1n",token="")
+yt_oauth("40461753740-2db7dfc50roh6m94vqp0oo8s88nh15bb.apps.googleusercontent.com",<API_KEY>,token="")
 
 a1 <- list_channel_resources(filter = c(channel_id = "UCSZlxQzFeHpZKKd7_HK-SIA"), part="contentDetails")		
  playlist_id <- a1$items[[1]]$contentDetails$relatedPlaylists$uploads		

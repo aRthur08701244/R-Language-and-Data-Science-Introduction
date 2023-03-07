@@ -3,11 +3,7 @@ library(dplyr)
 library(tibble)
 
 #initiate the enviornment
-yt_oauth("993517665814-6814a7udih50oka86ni65dqvi4nuuptl.apps.googleusercontent.com", 
-         " bvyPD5AnU4eVSdHhS1QjYgKC")
-
-#backup tokens
-#yt_oauth("473139977017-4316igg8or20sfac6lvsv7fo1u8mmsdk.apps.googleusercontent.com","2LSQ5XNnMyVLeE29uIwT9mE6")
+yt_oauth("993517665814-6814a7udih50oka86ni65dqvi4nuuptl.apps.googleusercontent.com", <API_KEY>)
 
 #get channel video lists and other details (e.g. Tom Frankly)
 

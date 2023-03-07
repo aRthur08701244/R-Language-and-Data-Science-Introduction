@@ -5,7 +5,7 @@ library(tibble)
 library(stringr)
 library(ggplot2)
 yt_oauth("544072810193-n86gchu9880krq6914i2ds63tfnine53.apps.googleusercontent.com",
-         "eXCir0J_gE0fnSoiUuzgSA6o" ,token = "")
+<API_KEY> ,token = "")
 # Getting imformations of videos
 # p.s. When the value of max_results is bigger than 50 ,all videos will be loaded !
 x <- c("UCWDaU-qRXrZcUQYDRv2asvw" , "UCzxN4G3s9uR9ao5_O5DoXmA" , "UCTqPBBnP2T57kmiPQ87986g" ,"UCOmxt6hJpmwTHnDj0vkR2Ew", "UCuggN8RzbtpxFSd6LHCeXew")

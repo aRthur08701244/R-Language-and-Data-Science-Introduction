@@ -13,7 +13,7 @@ library(dplyr)
 
 app_id ="956042567986-v02ke4ihcca34j0sivjn67dcnoo4kbn4.apps.googleusercontent.com"
 
-app_secret = "tyEuYXXWvcT29ZPeU8VRwLKe"
+app_secret = ""
 
 yt_oauth(app_id,app_secret,token="")
 
