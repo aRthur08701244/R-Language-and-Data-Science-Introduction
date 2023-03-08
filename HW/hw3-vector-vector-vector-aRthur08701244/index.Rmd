@@ -1,0 +1,226 @@
+---
+author: "蔡鉎驊 B08701244 工管系"
+title: "HW 3: Vector, Vector, Vector"
+date: |
+  | 2019-09-26
+  |
+  | [Rmd Source (for TAs)](./index.Rmd){download='`r basename(getwd())`.Rmd'}
+output:
+  html_document:
+    number_sections: yes
+    highlight: tango
+    toc: yes
+    toc_float:
+      collapsed: no
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = 'hold', comment = '#>', error = TRUE)
+```
+
+
+基本題 (共 100 分)
+=========================
+
+
+## 向量向量向量 (共 40 分)
+
+R 的向量式運算讓其非常適合用於統計學領域，因為需多統計學的運算與推導都會用到線性代數與向量。讓我們來探索向量式運算的便利之處吧～
+
+1. (10 分) **內積**  
+已知給定兩向量 $\mathbf{a} = [a1,~a2,~a3]$ 與 $\mathbf{b} = [b1,~b2,~b3]$，其內積為:
+$$\mathbf{a} \cdot \mathbf{b} = a1 \times b1 + a2 \times b2 + a3 \times b3$$
+請計算出 vec1 與 vec2 的內積：
+
+    ```{r}
+    vec1 <- c(1, -1, 0)
+    vec2 <- c(pi, pi, exp(1))
+    
+    # 請在下方寫下你的程式碼
+    #vec1[1]*vec2[1]+vec1[2]*vec2[2]+vec1[3]*vec2[3]
+    inner_product <- sum(vec1 * vec2)
+
+    
+    # 請勿更動下方程式碼
+    inner_product
+    # should print out:
+    #> [1] 0
+    ```
+
+2. (20 分) **修正姓氏**  
+下方為 2020 總統大選某投開票所開出的前 100 張選票 (儲存於 `votes`)，請將 `votes` 裡面的每個元素的第一個字母改成大寫 (e.g. `tsai` --> `Tsai`)。(hint: 你可以使用 `unique()` 找出 `votes` 裡面有哪些候選人)
+
+    ```{r}
+    votes <- c("gou", "ko", "wang", "wang", "wang", "wang", "ko", "wang", "tsai", "ko", "ko", "wang", "han", "wang", "ko", "han", "ko", "wang", "wang", "han", "tsai", "tsai", "ko", "tsai", "gou", "gou", "han", "ko", "han", "gou", "wang", "gou", "han", "gou", "wang", "wang", "han", "tsai", "han", "wang", "ko", "tsai", "wang", "ko", "ko", "ko", "tsai", "han", "wang", "gou", "han", "gou", "ko", "wang", "han", "ko", "tsai", "wang", "han", "tsai", "wang", "han", "gou", "tsai", "ko", "han", "wang", "tsai", "han", "tsai", "tsai", "tsai", "tsai", "wang", "gou", "tsai", "wang", "tsai", "han", "ko", "gou", "wang", "ko", "gou", "han", "ko", "wang", "gou", "gou", "ko", "ko", "gou", "wang", "ko", "ko", "ko", "han", "tsai", "ko", "wang")
+    
+    # 請在下方寫下你的程式碼
+    votes[votes=="gou"]<-("Gou")
+    votes[votes=="ko"]<-("Ko")
+    votes[votes=="wang"]<-("Wang")
+    votes[votes=="tsai"]<-("Tsai")
+    votes[votes=="han"]<-("Han")
+    
+    votes
+    
+    
+    # should print out:
+    #> [1] "Gou" "Ko" "Wang" "Wang" "Wang" ...
+    ```
+
+3. (10 分) (承上題) **得票率**  
+請依序計算出 `Tsai` 與 `Gou` 的得票率 (候選人得票數/總票數)
+
+    ```{r}
+    # 請在下方寫下你的程式碼
+    sum(votes=='Tsai')/100
+    sum(votes=="Gou")/100
+    
+    
+    
+    
+    # should print out:
+    #> [1] 0.18
+    #> [1] 0.15
+    ```
+
+## 擲骰子 (共 30 分)
+
+這次的作業 repo 中有個資料夾 `dice/`，裡面存放了 6 張圖片 (`1.png`, `2.png`, ... `6.png`)，每張圖片代表骰子其中一面的點數。你的任務是使用 `sample()` 以及這些骰子圖片去「玩」擲骰子的遊戲。
+
+1. (15 分) `sample()` 函數  
+請研究一下 `sample()` 這個函數，並使用 `sample()` 從 1, 2, 3, ..., 6 裡面重複抽取出 10 個數字 (i.e. 擲 10 次骰子)，並將這 10 次抽出的數字以 numeric vector 的形式儲存在變數 `rolled` 當中 
+
+    ```{r}
+    # 請在下方寫下你的程式碼
+    #rolled<-sample(c(1:6),10,replace=TRUE)
+    dice <- 1:6
+    rolled <- sample(dice, size = 10, replace = TRUE)
+    # 請勿更動下方程式碼
+    rolled
+
+    # should print out something like:
+    #> [1] 6 2 1 5 4 5 3 3 2 1
+    
+    # Since it's random, the results should be different each time,
+    # but there will always be ten numbers
+    ```
+
+2. (15 分) 動態嵌入圖片  
+在「擲」完骰子後，`rolled` 裡面應該儲存著 10 個範圍介於 1(含) 至 6(含) 的數字，而恰巧在 `dice/` 資料夾中的六張圖片的檔名也在 1 至 6 的數字中 (e.g. `2.png`)。因此，與其單純將 `rolled` 裡面的數字印出來，不如將這些數字轉變成骰子點數的圖片會更有趣。但要做到這點，你必須先提供這些骰子圖片的[相對路徑][relative-path]，讓 R Markdown 可以依序將骰子點數的圖片插入文件中。舉例來說，你需要將 `6 2 1 5 4 5 3 3 2 1` 這個 numeric vector 變成一個 character vector: `"dice/6" "dice/2" "dice/1" "dice/5" "dice/4" "dice/5" "dice/3" "dice/3" "dice/2" "dice/1"`，如此，在將 Rmd Knit 成 HTML 時，電腦才找得到這些骰子圖片。你的任務是使用 `paste0()` 和 `rolled` 去製造出這個 character vector，並將此 character vector 儲存於 `img_paths`：
+
+    ```{r}
+    # 請修改下方程式碼，使 `img_paths` 印出的結果符合題目要求
+    
+    #rolled<-sample(c(1:6),10,replace=TRUE)
+    #rolled[rolled == 1]<-("dice/1.png")
+    #rolled[rolled == 2]<-("dice/2.png")
+    #rolled[rolled == 3]<-("dice/3.png")
+    #rolled[rolled == 4]<-("dice/4.png")
+    #rolled[rolled == 5]<-("dice/5.png")
+    #rolled[rolled == 6]<-("dice/6.png")
+    #img_paths<-paste0(rolled)
+    img_paths <- paste0('dice/', rolled, '.png')
+
+    # 請勿更動下方程式碼
+    img_paths
+
+    # should print out something like:
+    #>  [1] "dice/2.png" "dice/5.png" "dice/4.png" "dice/2.png" "dice/4.png"
+    #>  [6] "dice/6.png" "dice/3.png" "dice/2.png" "dice/1.png" "dice/5.png"
+
+    # Since it's random, the results should be different each time,
+    # but there will always be ten elements.
+    # Also note that the elements should match the numbers stored in `rolled`
+    ```
+
+    ```{r fig.show='hold', out.width=paste0(100/length(img_paths), '%')}
+    # 插入圖片用的，請勿更動此 Code Chunk 程式碼
+    knitr::include_graphics(img_paths)
+    ```
+
+
+## 編號產生器 (30 分)
+
+R 的向量式運算非常適合用來快速產生編號。你的任務是使用 `paste0()` 、 `rep()` 以及內建變數 `LETTERS` (A 至 Z、長度為 26 的 character vector) 去製造出一個長度為 78 的 character vector。這個 character vector 內的每個元素的形式為 `<大寫字母>_<數字>` (e.g., `A_1`, `K_3` )，且其**排序**應如下：
+
+```
+A_1 A_2 A_3 B_1 B_2 B_3 C_1 C_2 C_3 ... Z_1 Z_2 Z_3
+```
+
+<div class="alert alert-success hint">
+1. 請先玩玩看 `rep()`，依據不同的輸入它會有許多令人意外的輸出。你可以嘗試看看：
+
+    ```{r}
+    rep(c("a", "b"), times = 2)
+    rep(c("a", "b"), times = 1:2)
+    rep(c("a", "b"), times = c(2, 2))
+    ```
+
+2. 這題會用到 Recycling 的概念
+</div>
+
+
+```{r}
+# write your code here
+#x<-rep(c(LETTERS), times = c(3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3))
+#y<-rep(c(1:3),times=26)
+#paste0(x,"_",y)
+# write your code here
+AAAtoZZZ <- rep(LETTERS, 
+                times = rep(3, times = length(LETTERS)))
+paste0(AAAtoZZZ, '_', 1:3)
+# should print out:
+#>  [1] "A_1" "A_2" "A_3" "B_1" "B_2" "B_3" "C_1" "C_2" "C_3"
+#> [10] "D_1" "D_2" "D_3" "E_1" "E_2" "E_3" "F_1" "F_2" "F_3"
+#> [19] "G_1" "G_2" "G_3" "H_1" "H_2" "H_3" "I_1" "I_2" "I_3"
+#> [28] "J_1" "J_2" "J_3" "K_1" "K_2" "K_3" "L_1" "L_2" "L_3"
+#> [37] "M_1" "M_2" "M_3" "N_1" "N_2" "N_3" "O_1" "O_2" "O_3"
+#> [46] "P_1" "P_2" "P_3" "Q_1" "Q_2" "Q_3" "R_1" "R_2" "R_3"
+#> [55] "S_1" "S_2" "S_3" "T_1" "T_2" "T_3" "U_1" "U_2" "U_3"
+#> [64] "V_1" "V_2" "V_3" "W_1" "W_2" "W_3" "X_1" "X_2" "X_3"
+#> [73] "Y_1" "Y_2" "Y_3" "Z_1" "Z_2" "Z_3"
+```
+
+
+
+進階選答題 (共 20 分)
+==========================
+
+> 這題使用到的 `replicate()` 屬於 R 的 `*apply` 家族 (這門課**不會介紹到**)。
+> 若你是程式新手，建議可以先閱讀 Hands-on Programming with R 的 [Part 1](https://rstudio-education.github.io/hopr/project-1-weighted-dice.html)；
+> 若有程式經驗，可以參考 [R 進階迴圈](https://blog.gtwang.org/r/r-advanced-loops/))
+
+從國中數學我們知道，如果隨機擲兩個骰子並將這兩個骰子的點數加總，那我們得到 7 點的機率是 $\frac{6}{36}$、得到 6 點的機率是 $\frac{5}{36}$...。因此，若將兩骰子的點數和繪製成一個機率分佈圖 (x 軸為點數和、y 軸為點數和的機率)，我們會得到一個形狀如金字塔的分配 (見下圖)。
+
+![兩骰子點數和 (S) 之機率分佈](https://i.stack.imgur.com/DNhaf.png){.half}
+
+
+你的任務是使用 R 去「擲骰子」以模擬這個現象：  
+請使用 `sample()`, `sum()`, `replicate()` 這 3 個函數去「擲」 1000 次骰子，並將結果儲存於 `sampling_exp`。`samling_exp` 裡面應該儲存著一個長度為 1000 的數列 (例如 `11 9 12 7 3 5 10 7 3 12 8 ...`，由於是隨機的，每次執行結果應會不同)
+
+```{r}
+# 請在下方寫下你的程式碼
+dice <- 1:6
+sampling_exp <- replicate(1000, 
+                          sum(sample(dice, size = 2, replace = TRUE))  # `replace = TRUE` is needed
+                          )
+sampling_exp
+
+
+# 請勿更動下方程式碼
+sampling_exp
+```
+
+
+```{r message=FALSE}
+# 請勿更動此 Code Chunk 程式碼
+barplot(table(sampling_exp) / 1000,
+        xlab = '兩骰子點數和',
+        ylab = 'Prob',
+        ylim = c(0 , 0.2))
+```
+
+
+
+[relative-path]: <https://zh.wikipedia.org/wiki/%E8%B7%AF%E5%BE%84_(%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6)#%E7%BB%9D%E5%AF%B9%E4%B8%8E%E7%9B%B8%E5%AF%B9%E8%B7%AF%E5%BE%84>

@@ -1,0 +1,239 @@
+---
+author: "蔡鉎驊 B08701244 工管系"
+title: "HW 4: List, Loops, and Data frame (W4)"
+date: | 
+  | 2019-10-03
+  |
+  | [Rmd Source (for TAs)](./index.Rmd){download='`r basename(getwd())`.Rmd'}
+output:
+  html_document:
+    number_sections: yes
+    highlight: tango
+    toc: yes
+    toc_float:
+      collapsed: no
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = 'hold', comment = '#>', error = TRUE)
+```
+
+
+基本題 (共 100 分)
+=========================
+
+
+## 句子產生器 (共 40 分)
+
+```{r}
+# 請勿更動此 code chunk 程式碼
+
+# Data
+member <- list(
+    kai = list(age = 40, about = "a professor"),
+    jessy = list(age = 20, about = "a cat lover"),
+    joy = list(age = 18, about = "a hacker"),
+    ben = list(age = 19, about = "a YouTuber")
+)
+
+for (name in names(member)) {
+    someone <- member[[name]]
+
+    # 將組成句子的片語儲存於 char vector `phrases`
+    phrases <- c(name, someone$about, "is quite young.")
+    if (someone$age > 35) {
+        phrases[3] <- "should be wise."
+    }
+
+    # 在各片語之間插入逗點，形成一個句子
+    sentence <- paste0(phrases,  collapse = ', ')
+    print(sentence)
+}
+```
+
+上方的程式碼是課堂上使用過的例子。在這題，你的任務是依據上方的程式碼，改寫出一個比較簡潔的程式。助教已經將大多數的程式碼寫好了，你要做的是觀察下方的程式碼，再修改 `info2phrases()` 的內容，使 for loop 能產生與上方程式碼相同的結果。
+
+<div class="alert alert-success hint">
+- `info2phrases()` 有兩個參數：`someone` 與 `last_phrase`
+    - `someone` 的輸入值必須是個 list
+    - `last_phrase` 的輸入值必須是個長度為 2 的 character vector，其第一個元素會在 `someone` 小於或等於 35 歲時出現在輸出的 character vector 中，第二個元素則在大於 35 歲時出現。
+- `info2phrases()` 應當回傳一個長度為 3 的 character vector。
+</div>
+
+```{r}
+# data
+member <- list(
+    kai = list(age = 40, about = "a professor"),
+    jessy = list(age = 20, about = "a cat lover"),
+    joy = list(age = 18, about = "a hacker"),
+    ben = list(age = 19, about = "a YouTuber")
+)
+####### 請勿更動此行之上的任何程式碼 ##########
+info2phrases <- function(someone, last_phrase) {
+  last_phrase<-c("is quite young.","should be wise.")
+ for (name in names(member)) {
+    someone <- member[[name]]
+  if(someone$age>35)
+    last_phrase<-last_phrase[2]
+  else
+    last_phrase<-last_phrase[1]
+    
+  } 
+  }  # Write your code here
+
+
+
+
+####### 請勿更動此行之下的任何程式碼 ##########
+for (i in seq_along(member)) {
+    someone <- member[i]
+
+    # 將組成句子的片語儲存於 char vector `phrases`
+    phrases <- info2phrases(someone, c("is quite young.", "should be wise."))
+
+    # 在各片語之間插入逗點，形成一個句子
+    sentence <- paste0(phrases,  collapse = ', ')
+    print(sentence)
+}
+```
+
+
+## Subsetting data frames (共 60 分)
+
+此題使用的是 R 的內建資料 `iris`，請使用 `?iris` 閱讀此資料集的說明，並使用上課講到的指令 (e.g. `dim()`, `glimpse()`, `View()`, ...) 幫助自己熟悉這份資料。
+
+```{r}
+# 請勿更動此 code chunk
+library(tibble)
+df <- as_tibble(iris)
+df
+```
+
+1. (20 分)  
+請從 `df` 中 (1) 篩選出 `Species` 變項為 `versicolor` 的所有觀察值，並 (2) 只保留 `Sepal.Length`, `Sepal.Width`, `Petal.Length`, `Petal.Width` 這 4 個變項：
+    ```{r}
+    # Write your code here
+    #for(i in 1:150){if(df[i,5] == "versicolor")print(df[i,1:4])}
+    df[df$Species == "versicolor", -5]
+    
+    
+    
+    # should print out:
+    #> # A tibble: 50 x 4
+    #>    Sepal.Length Sepal.Width Petal.Length Petal.Width
+    #>           <dbl>       <dbl>        <dbl>       <dbl>
+    #>  1          7           3.2          4.7         1.4
+    #>  2          6.4         3.2          4.5         1.5
+    #>  3          6.9         3.1          4.9         1.5
+    #>  4          5.5         2.3          4           1.3
+    #>  5          6.5         2.8          4.6         1.5
+    #>  6          5.7         2.8          4.5         1.3
+    #>  7          6.3         3.3          4.7         1.6
+    #>  8          4.9         2.4          3.3         1  
+    #>  9          6.6         2.9          4.6         1.3
+    #> 10          5.2         2.7          3.9         1.4
+    #> # … with 40 more rows
+    ```
+
+2. (20 分)  
+請從 `df` 中篩選出 (1) `Species` 變項為 `versicolor` 且 (2) `Sepal.Length` 大於 5.8 的所有觀察值：
+    ```{r}
+    # Write your code here
+    #for(i in 1:150){if(df[i,5] == "versicolor")if(df[i,1] > 5.8)print(df[i,1:4])}
+    df[(df$Species == "versicolor") & (df$Sepal.Length > 5.8), ]
+    
+    
+    
+    # should print out:
+    #> # A tibble: 26 x 5
+    #>    Sepal.Length Sepal.Width Petal.Length Petal.Width Species  
+    #>           <dbl>       <dbl>        <dbl>       <dbl> <fct>    
+    #>  1          7           3.2          4.7         1.4 versicol…
+    #>  2          6.4         3.2          4.5         1.5 versicol…
+    #>  3          6.9         3.1          4.9         1.5 versicol…
+    #>  4          6.5         2.8          4.6         1.5 versicol…
+    #>  5          6.3         3.3          4.7         1.6 versicol…
+    #>  6          6.6         2.9          4.6         1.3 versicol…
+    #>  7          5.9         3            4.2         1.5 versicol…
+    #>  8          6           2.2          4           1   versicol…
+    #>  9          6.1         2.9          4.7         1.4 versicol…
+    #> 10          6.7         3.1          4.4         1.4 versicol…
+    #> # … with 16 more rows
+    ```
+
+3. (20 分)  
+請從 `df` 中篩選出 `Sepal.Length` 與 `Sepal.Width` 之和大於 8.5 的所有觀察值。
+    ```{r}
+    # Write your code here
+    #for(i in 1:150){if(df[i,1]+df[i,2]>8.5)print(df[i,])}
+      df[(df$Sepal.Length + df$Sepal.Width > 8.5), ]
+    
+    
+    # should print out:
+    #> # A tibble: 93 x 5
+    #>    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+    #>           <dbl>       <dbl>        <dbl>       <dbl> <fct>  
+    #>  1          5.1         3.5          1.4         0.2 setosa 
+    #>  2          5           3.6          1.4         0.2 setosa 
+    #>  3          5.4         3.9          1.7         0.4 setosa 
+    #>  4          5.4         3.7          1.5         0.2 setosa 
+    #>  5          5.8         4            1.2         0.2 setosa 
+    #>  6          5.7         4.4          1.5         0.4 setosa 
+    #>  7          5.4         3.9          1.3         0.4 setosa 
+    #>  8          5.1         3.5          1.4         0.3 setosa 
+    #>  9          5.7         3.8          1.7         0.3 setosa 
+    #> 10          5.1         3.8          1.5         0.3 setosa 
+    #> # … with 83 more rows
+    ```
+
+
+進階選答題 (共 20 分)
+==========================
+
+以下是冰與火之歌角色演員的生日資料，請先讀取csv檔，將檔案內的表格變成名為`GOT_cast_birthday`的data frame，並回答問題：
+
+1. （4分）
+增加自己的資料在所有欄位：`Cast`, `Role`（自行取名）, `Birthday`
+2. （4分）
+將各人物生日欄位（`Birthday`）轉為日期的格式（包含自己的資料）
+3. （4分）
+計算各個人物的年齡，新增成一個名為`Age`的欄並四捨五入成整數（包含自己的資料）
+4. （4分）
+計算此表人物的平均年齡並四捨五入成整數，命名為變數`Mean_Age`（不含自己的資料）
+5. （4分）
+增加一個名為`Star_Sign`的英文星座欄位，並轉回character的格式（hint:可使用相關套件來指派星座）（包含自己的資料）
+
+**Note: 請將含有五個變項`Cast`, `Role`, `Birthday`, `Age`, `Star_Sign`的資料存為csv檔，之後可能會用到。**
+
+```{r}
+# Write your code here
+GOT_cast_birthday<-GOT_cast_birthday
+append("Arthur",GOT_cast_birthday[36,1])
+append("Arthur",GOT_cast_birthday[36,2])
+append("2001/6/28",GOT_cast_birthday[36,3])
+
+
+```
+
+
+你可以透過下方程式碼檢查是否完成（不算在作業評分內）：
+
+```{r message=FALSE, results='hold'}
+# 請勿更動此 code chunk 程式碼
+nrow(GOT_cast_birthday) #計算人物數量
+class(GOT_cast_birthday$Birthday) #看`Birthday`的資料型態
+"Age" %in% colnames(GOT_cast_birthday) #確認 `Age` 欄位
+print(Mean_Age) #看 `Mean_Age`數值
+"Star_Sign" %in% colnames(GOT_cast_birthday) #確認 `Star_Sign` 欄位
+class(GOT_cast_birthday$Star_Sign) #看 `Star_Sign` 的資料型態
+
+# Should print out:
+#> [1] 36
+#> [1] "Date" 或 "POSIXct" 或 "POSIXt"
+#> [1] TRUE
+#> [1] 44
+#> [1] TRUE
+#> [1] "character"
+```
+

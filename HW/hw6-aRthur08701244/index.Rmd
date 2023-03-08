@@ -1,0 +1,224 @@
+---
+author: "蔡鉎驊 B08701244 工管一"
+title: "HW 6: 與資料搏鬥"
+date: |
+  | 2019-10-17
+  |
+  | [Rmd Source (for TAs)](./index.Rmd){download='`r basename(getwd())`.Rmd'}
+output:
+  html_document:
+    number_sections: yes
+    highlight: tango
+    toc: yes
+    toc_float:
+      collapsed: no
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,comment = '#>',error=TRUE, results = 'hold', out.width='65%', fig.align = 'center', message = FALSE)
+```
+
+基本題 (共 100 分)
+=====================
+
+## 資料讀取 (15 分)
+
+請將作業資料夾內的 `titanic-passengers.csv` 以 `tibble`(建議) 或 `data.frame` 的形式讀入並儲存於變項 `titanic` 。需注意 `titanic-passengers.csv` 是以**分號**作為分隔符號的 `csv` 檔，因此使用 `readr::read_csv()` (使用**逗號**作為分隔符號) 會無法正常讀取檔案。
+
+```{r}
+# Write your code here
+library(tibble)
+titanic <- as_tibble(read.csv("titanic-passengers.csv", sep = ";"))
+
+
+# 請勿更動下方程式碼
+head(titanic)
+# Should print out:
+#> # A tibble: 6 x 12
+#>   PassengerId Survived Pclass Name  Sex     Age SibSp Parch Ticket  Fare
+#>         <dbl> <chr>     <dbl> <chr> <chr> <dbl> <dbl> <dbl> <chr>  <dbl>
+#> 1         343 No            2 Coll… male     28     0     0 248740 13   
+#> 2          76 No            3 Moen… male     25     0     0 348123  7.65
+#> 3         641 No            3 Jens… male     20     0     0 350050  7.85
+#> 4         568 No            3 Pals… fema…    29     0     4 349909 21.1 
+#> 5         672 No            1 Davi… male     31     1     0 F.C. … 52   
+#> 6         105 No            3 Gust… male     37     2     0 31012…  7.92
+#> # … with 2 more variables: Cabin <chr>, Embarked <chr>
+```
+
+<div class="alert alert-success hint">
+可以參考 `readr::read_delim()` 或是在 RStudio `import Dataset` 的界面中選擇適當的 "Delimiter" (分隔符號)。
+</div>
+
+
+## 分組摘要 (30 分) {#q2}
+
+`titanic` 是著名的鐵達尼號沉船事件中[搭上鐵達尼號的乘客名單](https://zh.wikipedia.org/wiki/鐵達尼號乘客列表)，這筆資料還包含了這些乘客的其它資訊：
+
+1. `Pclass`：該乘客所購買的船票等級。船票等級共分 3 級，`1` 是最高的等級 (最貴)，`3` 是最低的等級
+2. `Survived`：該乘客是否在沉船事件後存活下來
+3. `Sex`：該乘客的性別 
+
+
+請使用 R 整理資料的功能，去：
+
+1. 將乘客依據**性別 (`Sex`)** 以及**船票等級 (`Pclass`)** 進行分組
+2. 再計算出各組乘客的**死亡率** (儲存死亡率的變項請命名為 `percent_died`)
+
+```{r}
+# Write your code here
+library(dplyr)
+titanic10 <- filter(titanic, !is.na(titanic$Age))
+titanic10 %>%
+  group_by(Sex, Pclass)%>%
+    summarise(percent_died = sum(Survived == "No")/n())
+
+# Should print out:
+#> # A tibble: 6 x 3
+#> # Groups:   Sex [2]
+#>   Sex    Pclass percent_died
+#>   <chr>   <dbl>        <dbl>
+#> 1 female      1       0.0319
+#> 2 female      2       0.0789
+#> 3 female      3       0.5   
+#> 4 male        1       0.631 
+#> 5 male        2       0.843 
+#> 6 male        3       0.865
+```
+
+
+## 幾歲有差嗎？ (共 55 分)
+
+接下來要探討的是乘客生存與否與**年齡層**是否有關聯。想要探討這點的一個方法，是先將乘客**分成不同的年齡層**再去看看不同年齡層的死亡率。你的任務是：
+
+1. 為 `titanic` 創立一個新的變項 `age_group`，它必須有 3 個類別 `young`, `middle` 與 `old`:
+    - `young`：該乘客的年齡小於 15 歲
+    - `middle`：該乘客的年齡介於 15(含) 至 60(不含) 歲之間
+    - `old`：該乘客的年齡超過 60(含) 歲
+2. 將乘客依據 `Pclass` 以及 `age_group` 分組
+3. 計算各組乘客的**死亡率**以及各組的**人數** (使用 `summarise()`)
+
+
+### `classify()`: a vectorized function to work with `mutate()` (25 分)
+
+在使用 `dplyr` 整理資料時，時常會需要撰寫自己的函數。而要讓撰寫的函數能融入 `dplyr` 的使用 (尤其是與 `mutate()` 併用)，通常需要撰寫 vectorized function。下方(未完成)的程式碼即是在撰寫一個 vectorized function，`classify()`。這個函數的目的在於幫助你**將不同的年齡分組**，例如，若輸入 `classify(10)` 它應該要回傳 `[1] "young"`；若輸入 `classify(c(NA, 15, 60))` 它應該回傳 `[1] NA "middle" "old"`。
+
+你的任務是修改或擴增下方的程式碼，使 `classify()` 能正常運作。
+
+```{r}
+classify <- function(ages) {
+  # Initialize empty vector of length same as `ages`
+  age_group <- vector("character", length = length(ages))
+  
+  # Use for loop to write 'vectorized' function
+  for (i in seq_along(ages)) {
+    ######### Modify the code below #############
+   if ( is.na(ages[i])) {
+      age_group[i] <- NA
+    } else if (ages[i] < 15) {
+      age_group[i] <- "young"
+    } else if (ages[i] < 60) {
+      age_group[i] <- "middle"
+    } else {
+      age_group[i] <- "old"
+    }
+    ######### Modify the code above #############
+  }
+  return(age_group)
+}
+
+
+# 請勿更動此下方程式碼
+classify(NA)
+classify(c(14, 15, 16, NA, 59, 60))
+# Should print out:
+#> [1] NA
+#> [1] "young"  "middle" "middle" NA       "middle" "old"
+```
+
+
+### 摘要表 (30 分)
+
+請使用前面完成的函數 `classify()` 以及 `dplyr` 的 `mutate()`, `filter()`, `group_by()`, `summarise()` 等函數，整理出一份摘要表。這份摘要表要能看到依據 `Pclass` 以及 `age_group` 所分成的 9 組中，各組的人數 (`count`) 以及死亡率 (`percent_died`)。
+
+```{r}
+# Write your code here
+library(dplyr)
+titanic10 <- filter(titanic, !is.na(titanic$Age))
+titanic10%>%
+  mutate(age_group = classify(titanic10$Age)) %>%
+   group_by(Pclass, age_group) %>%
+    summarise(percent_died = sum(Survived == "No")/n(),count = n())
+
+
+# Should print out:
+#> # A tibble: 9 x 4
+#> # Groups:   Pclass [3]
+#>   Pclass age_group percent_died count
+#>    <dbl> <chr>            <dbl> <int>
+#> 1      1 middle           0.311   164
+#> 2      1 old              0.706    17
+#> 3      1 young            0.2       5
+#> 4      2 middle           0.580   150
+#> 5      2 old              0.75      4
+#> 6      2 young            0        19
+#> 7      3 middle           0.791   296
+#> 8      3 old              0.8       5
+#> 9      3 young            0.593    54
+```
+
+
+進階選答題 (共 20 分)
+=====================
+
+上週我們對冰與火之歌角色演員的生日資料表做了些操作，產出了含有五個變項`Cast`, `Role`, `Birthday`, `Age`, `Star_Sign`的csv檔，請讀此檔並命名為`GOT_cast_info`，並依序回答以下問題。
+
+1. （5分）
+新增`Sign`欄位，並將每個角色的星座歸類到Fire Sign, Air Sign, Earth Sign, Water Sign。
+
+2. （10分）
+寫出一個名為`character_message`的function，input函數為`Role`欄位的資訊，使其傳回一串訊息，包含`Cast`, `Sign`和出生年份（命名為`Birth_Year`）的資訊，以字串的型態呈現。
+
+```{r}
+# Write your code here
+
+
+
+
+
+
+character_message <- function(x) {
+  # Write your function here
+  
+  
+  
+  
+  # 請勿更動以下程式碼
+  message = paste0("This is ", Cast, ", who was born in ", Birth_Year, " and is a ", Sign)
+  return(message)
+}
+
+# 請勿更動以下程式碼
+character_message("Theon Greyjoy")
+```
+
+
+3. （5分）
+製造一個新的data frame，命名為`df`，欄位依序為`Sign`, `Cast_List`。若有多位演員，請合併在同一個cell內，例如：`Sign`為`Air Sign`的那一列，`Cast_List`為`Jacob Basil Anderson, Jim Broadbent, Emilia Clarke, Liam Cunningham...`（略）。
+
+```{r}
+# Write your code here
+GOT_cast_info %>% group_by(Sign) %>% summarize(Cast_List=paste0(Cast, collapse=", "))
+```
+
+你可以透過下方程式碼檢查是否完成（不算在作業評分內），執行結果為：
+```
+[1] TRUE
+[1] "This is Alfie Allen, who was born in 1986 and is a Earth Sign"
+```
+
+```{r}
+"Sign" %in% colnames(GOT_cast_info) # 確認 `Sign` 欄位
+character_message("Theon Greyjoy") # 確認character_message的function是否成功
+```

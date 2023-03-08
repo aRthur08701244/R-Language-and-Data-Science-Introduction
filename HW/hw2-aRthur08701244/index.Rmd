@@ -1,0 +1,117 @@
+---
+author: "蔡鉎驊 B08701244 工管系"
+title: "HW 2: 試試水溫"
+date: |
+  | 2019-09-19
+  |
+  | [Rmd Source (for TAs)](./index.Rmd){download='`r basename(getwd())`.Rmd'}
+output:
+  html_document:
+    number_sections: yes
+    highlight: tango
+    toc: yes
+    toc_float:
+      collapsed: no
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,comment = '#>',error=TRUE, results = 'hold', out.width='65%', fig.align = 'center')
+```
+
+
+# Argument Assignment (共 40 分)
+
+```{r}
+order_s <- function(p1, p2, p3) {
+  paste(p1, p2, p3)
+}
+```
+
+`order_s()` 是一個能將各輸入值 (`p1`, `p2` 與 `p3`) 拼接成一個字串再輸出的函數，例如，`order_s(1, 3, 2)` 會輸出一個字串 `1 3 2`，你可以在 Console 裡面玩玩看這個函數。這題的目的是讓你了解在呼叫函數時，如果同時提供 named argument 與 unnamed argument，R 會如何將這些 argument 指派給函數裡的參數 (parameters)。
+
+
+## 題目
+
+> 請在 `order_s(1, 2, 3)` 的**其中一個** argument 前面加上名稱 (`p1`, `p2`, or `p3`) 但**不能修改各 argument 的次序**，使印出的結果符合題目要求。
+
+0. (0 分，範例) 請在下方程式碼的 3 個 argument 中，選擇其中一個為其加入 argument name，使函數能印出 **"1 2 3"**
+
+    ```{r}
+    order_s(1, 2, p3 = 3)  # 正確答案
+    #order_s(1, p2 = 2, 3)  # 另一種正確答案
+    #order_s(1, p3 = 3, 2)  # 印出結果正確，但不符要求 (因為更改了 2 和 3 的位置)
+    
+    # should print out:
+    #> [1] "1 2 3"
+    ```
+
+1. (20 分) 請在下方程式碼的 3 個 argument 中，選擇其中一個為其加入 argument name，使函數能印出 **"1 3 2"**
+
+    ```{r}
+    order_s(1, 3, 2)  # 請修改此行程式碼
+    
+    # should print out:
+    #> [1] "1 3 2"
+    ```
+
+
+2. (20 分) 請在下方程式碼的 3 個 argument 中，選擇其中一個為其加入 argument name，使函數能印出 **"2 1 3"**
+
+    ```{r}
+    order_s(1, p1 = 2, 3)
+    
+    # should print out:
+    #> [1] "2 1 3"
+    ```
+
+
+# R Help Page (共 40 分)
+
+1. (20 分) 請先閱讀 `seq()` 的 help page，再使用此函數產生一個由 `1` 至 `101`、彼此間隔 2 的等差數列，亦即 `1 3 5 7 ... 101`
+
+    ```{r}
+    # Modify the code below
+    seq(1,101,by=2)
+    
+    # should print out:
+    #> [1] 1 3 5 7 9 ... 101
+    ```
+
+2. (20 分) 請先閱讀 `sum()` 與 `mean()` 的 help page，再使用這些函數計算前一題等差數列的**總和**及**算術平均數** (hint: 你可能需要使用**變數**暫存 `seq()` 產生的等差數列)
+
+    ```{r}
+    # Modify the code below
+    a_seq <- seq(1,101,by=2)
+    sum(a_seq)
+    mean(a_seq)
+    
+    # should print out:
+    #> [1] 2601
+    #> [1] 51
+    ```
+
+
+# 自訂函數 (共 20 分)
+
+已知 $$攝氏 = \frac{5}{9} \times (華氏 - 32)$$
+
+(20 分) 請撰寫一個「華氏轉攝氏」的函數 `f2c()`，使其能接受一個「華氏溫標」的輸入，並輸出此溫度的「攝氏溫標」。
+
+```{r}
+f2c <- function(fahrenheit) {
+  (fahrenheit-32)*5/9
+  # write your code here
+}
+
+# 請勿更動此行之下的程式碼
+f2c(32)
+f2c(212)
+f2c(100)
+
+# should print out:
+#> [1] 0
+#> [1] 100
+#> [1] 37.77778
+```
+
